@@ -20,44 +20,45 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.algamoney.api.event.RecursoCriadoEvent;
-import com.example.algamoney.api.model.Pessoa;
-import com.example.algamoney.api.repository.PessoaRepository;
-
+import com.example.algamoney.api.model.Usuario;
+import com.example.algamoney.api.repository.UsuarioRepository;
 
 
 @RestController//basicamente já transformar o retorno em json por exemplo
-@RequestMapping("/pessoas")//mapeamento da requisição 
-public class PessoaResource {
+@RequestMapping("/usuario")//mapeamento da requisição 
+public class UsuarioResource {
+	
 	@Autowired// procure uma implenetçaão de PessoaRepository e me entregue
-	private PessoaRepository pessoaRepository;
+	private UsuarioRepository usuarioRepository;
 	
 	@Autowired // serve para dispara um evento no spring
 	private ApplicationEventPublisher publisher; // publicador de applicationEvent
 	
 	@GetMapping  //mapeamento do get para essa Pessoa
-	public List<Pessoa> listar(){
-		return pessoaRepository.findAll();	
+	public List<Usuario> listar(){
+		return usuarioRepository.findAll();	
 	}
 	
 	@PostMapping
-	public ResponseEntity<Pessoa> criar(@Valid @RequestBody Pessoa pessoa , HttpServletResponse response){
+	public ResponseEntity<Usuario> criar(@Valid @RequestBody Usuario usuario , HttpServletResponse response){
 		
-		Pessoa pessoaSalva  = pessoaRepository.save(pessoa);
+		Usuario usuarioSalvo  = usuarioRepository.save(usuario);
 		
-		publisher.publishEvent(new RecursoCriadoEvent(this, response, pessoaSalva.getCodigo()));
-		return ResponseEntity.status(HttpStatus.CREATED).body(pessoaSalva);
+		publisher.publishEvent(new RecursoCriadoEvent(this, response, usuarioSalvo.getCodigo()));
+		return ResponseEntity.status(HttpStatus.CREATED).body(usuarioSalvo);
 		
 	}
 	
 	@GetMapping("/{codigo}")
-	public ResponseEntity<Optional<Pessoa>> buscarPorId(@PathVariable Long codigo){		
-		Optional<Pessoa> pessoa = pessoaRepository.findById(codigo);
-		return pessoa.isPresent() ? ResponseEntity.ok(pessoa):ResponseEntity.notFound().build();		
+	public ResponseEntity<Optional<Usuario>> buscarPorId(@PathVariable Long codigo){		
+		Optional<Usuario> usuario = usuarioRepository.findById(codigo);
+		return usuario.isPresent() ? ResponseEntity.ok(usuario):ResponseEntity.notFound().build();		
 	}
-
+	
 	@DeleteMapping("{codigo}") // mapeamento do delete 
 	@ResponseStatus(HttpStatus.NO_CONTENT)// retorna 204, foi executado com sucesso mais não tem nada pra retornar
 	public void remover(@PathVariable Long codigo) {
-		pessoaRepository.deleteById(codigo);
+		usuarioRepository.deleteById(codigo);
 	}
+	
 }

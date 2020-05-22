@@ -45,10 +45,12 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {/
 		return super.handleExceptionInternal(ex, erros, headers, HttpStatus.BAD_REQUEST, request);
 	}
 
-	@ExceptionHandler(EmptyResultDataAccessException.class) // serve para quando uma excessão de EmptyResultDataAccessException ser levantada, vir para esse método.
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public void handleEmptyResultDataAccessException() { // quando tenta excluir um registro que não se encontra mais no banco de dados.
-		
+	@ExceptionHandler({EmptyResultDataAccessException.class}) // serve para quando uma excessão de EmptyResultDataAccessException ser levantada, vir para esse método.	
+	public ResponseEntity<Object> handleEmptyResultDataAccessException(EmptyResultDataAccessException ex,  WebRequest request ) { // quando tenta excluir um registro que não se encontra mais no banco de dados.
+		String mensagemUsuario = messageSource.getMessage("recurso.nao-encontrado", null, LocaleContextHolder.getLocale());
+		String mensagemDesenvolvedor = ex.toString();
+		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuario, mensagemDesenvolvedor)); //Cria a lista de erros
+		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
 	}
 	
 	

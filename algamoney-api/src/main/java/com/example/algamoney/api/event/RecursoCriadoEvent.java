@@ -17,9 +17,11 @@ public class RecursoCriadoEvent extends ApplicationEvent {
 		this.codigo = codigo;
 		
 	}
+	
 	public HttpServletResponse getResponse() {
 		return response;
 	}
+	
 	public Long getCodigo() {
 		return codigo;
 	}

@@ -58,7 +58,7 @@ public class CategoriaResource {
 	@GetMapping("/{codigo}")
 	public ResponseEntity <Categoria> buscarPorId(@PathVariable Long codigo) { //consultar uma categoria pelo código
 		Categoria categoria =  categoriaRepository.findById(codigo).orElse(null);
-		return categoria!=null ? ResponseEntity.ok(categoria):ResponseEntity.notFound().build();
+		return categoria!=null ? ResponseEntity.ok(categoria) : ResponseEntity.notFound().build();
 	}
 	
 	@DeleteMapping("/{codigo}")// mapeamento do delete 

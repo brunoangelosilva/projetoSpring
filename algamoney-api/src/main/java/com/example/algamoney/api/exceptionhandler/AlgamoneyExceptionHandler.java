@@ -45,7 +45,8 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {/
 	}
 
 	@ExceptionHandler({EmptyResultDataAccessException.class}) // serve para quando uma excessão de EmptyResultDataAccessException ser levantada, vir para esse método.	
-	public ResponseEntity<Object> handleEmptyResultDataAccessException(EmptyResultDataAccessException ex,  WebRequest request ) { // quando tenta excluir um registro que não se encontra mais no banco de dados.
+	public ResponseEntity<Object> handleEmptyResultDataAccessException(EmptyResultDataAccessException ex,  WebRequest request ) { 
+		// ex de uso da classe : quando tenta excluir um registro que não se encontra mais no banco de dados.
 		String mensagemUsuario = messageSource.getMessage("recurso.nao-encontrado", null, LocaleContextHolder.getLocale());
 		String mensagemDesenvolvedor = ex.toString();
 		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuario, mensagemDesenvolvedor)); //Cria a lista de erros
@@ -55,7 +56,7 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {/
 	
 	private List<Erro> criarListaDeErros(BindingResult bindingResult) {
 		List<Erro> erros = new ArrayList<>();
-		for (FieldError fieldError : bindingResult.getFieldErrors()) { //me da todos os erros que aconteceram nos fields 
+		for (FieldError fieldError : bindingResult.getFieldErrors()) { //fornece todos os erros que aconteceram nos fields 
 			String mensagemUsuario = messageSource.getMessage(fieldError, LocaleContextHolder.getLocale());
 			String mensagemDesenvolvedor = fieldError.toString();
 			erros.add(new Erro(mensagemUsuario, mensagemDesenvolvedor));

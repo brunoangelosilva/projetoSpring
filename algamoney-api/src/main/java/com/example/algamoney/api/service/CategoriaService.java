@@ -25,5 +25,14 @@ public class CategoriaService {
 		return categoriaRepository.save(categoriaSalva);
 		
 	}
+	
+	public Categoria buscarPorId(Long codigo) {
+		
+		Categoria categoriaSalva = categoriaRepository.findById(codigo).orElse(null);
+		if(categoriaSalva == null) {
+			throw new EmptyResultDataAccessException(1);
+		}
+		return categoriaSalva;
+	}
 
 }

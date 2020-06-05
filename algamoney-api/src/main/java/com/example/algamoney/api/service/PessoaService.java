@@ -16,8 +16,10 @@ public class PessoaService {  // classe para regra de negócio (insert, update, 
 
 	public Pessoa pessoaAtualizar(Long codigo, Pessoa pessoa) {
 		
-		Pessoa pessoaSalva = buscarPessoaPorId(codigo);
-		
+		Pessoa pessoaSalva = buscarPessoaPorId(codigo); 
+		if(pessoaSalva==null) {
+			throw new EmptyResultDataAccessException(1); // levanta excessao  
+		}
 		BeanUtils.copyProperties(pessoa, pessoaSalva, "codigo");//source = a pessoa que recebo por parametro
 																	//target = a pessoa que busquei do banco
 																	//ignoreProperties = campos que quero que ignore na copia.
@@ -35,7 +37,7 @@ public class PessoaService {  // classe para regra de negócio (insert, update, 
 	private Pessoa buscarPessoaPorId(Long codigo) {
 		Pessoa pessoaSalva = pessoaRepository.findById(codigo).orElse(null);
 		if(pessoaSalva==null) {
-			throw new  EmptyResultDataAccessException(1); // levanta excessao tratada no 
+			throw new  EmptyResultDataAccessException(1); // levanta excessao 
 		 }
 		return pessoaSalva;
 	}

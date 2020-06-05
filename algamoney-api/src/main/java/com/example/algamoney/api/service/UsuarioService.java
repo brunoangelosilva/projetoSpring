@@ -27,4 +27,14 @@ public class UsuarioService {
 		return usuarioRepository.save(usuarioSalvo);
 	}
 
+	
+	public Usuario buscarPorId(Long codigo) {
+		
+		Usuario usuarioSalvo = usuarioRepository.findById(codigo).orElse(null);
+		if(usuarioSalvo == null) {
+			throw new EmptyResultDataAccessException(1);
+		}
+		return usuarioSalvo;
+		
+	}
 }

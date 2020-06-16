@@ -26,7 +26,6 @@ public class UsuarioService {
 		
 		return usuarioRepository.save(usuarioSalvo);
 	}
-
 	
 	public Usuario buscarPorId(Long codigo) {
 		

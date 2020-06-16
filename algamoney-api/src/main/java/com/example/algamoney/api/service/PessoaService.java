@@ -24,9 +24,7 @@ public class PessoaService {  // classe para regra de negócio (insert, update, 
 																	//target = a pessoa que busquei do banco
 																	//ignoreProperties = campos que quero que ignore na copia.
 		return pessoaRepository.save(pessoaSalva);
-	}
-
-	
+	}	
 
 	public void atualizarPropriedadeAtivo(Long codigo, Boolean ativo) {		
 		Pessoa pessoaSalva = buscarPessoaPorId(codigo);

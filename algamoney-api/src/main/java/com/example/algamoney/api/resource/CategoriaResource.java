@@ -34,7 +34,7 @@ public class CategoriaResource {
 	@Autowired
 	private CategoriaService categoriaService;
 	
-	@Autowired // serve para dispara um evento no spring
+	@Autowired 										// serve para dispara um evento no spring
 	private ApplicationEventPublisher publisher; // publicador de applicationEvent
 	
 	@GetMapping //mapeamento do get para essa categoria
@@ -51,7 +51,8 @@ public class CategoriaResource {
 		
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSalva.getCodigo())); // this = quem gerou o evento ; response e código
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(categoriaSalva); // retornando no body do response a categoria criada e substitui a anotação @ResponseStatus do método criar 																														 		
+		return ResponseEntity.status(HttpStatus.CREATED).body(categoriaSalva); // retornando no body do response a categoria criada 
+																			   // e substitui a anotação @ResponseStatus do método criar 																														 		
 																		
 	}
 	

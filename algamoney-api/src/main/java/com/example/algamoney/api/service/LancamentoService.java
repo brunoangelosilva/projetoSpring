@@ -30,7 +30,6 @@ public class LancamentoService {
 		}
 		BeanUtils.copyProperties(lancamento, lancamentoSalvo, "codigo"); // atualiza o lancamentoSalvo a partir do
 																			// lancamento, ingnorando o codigo;
-
 		return lancamentoRepository.save(lancamentoSalvo);
 	}
 
@@ -40,6 +39,7 @@ public class LancamentoService {
 		if (lancamentoSalvo == null) {
 			throw new EmptyResultDataAccessException(1);
 		}
+		
 		return lancamentoSalvo;
 	}
 

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,8 +50,8 @@ public class LancamentoResource {
 	private ApplicationEventPublisher publisher; // publicador de AplicationEvent
 	
 	@GetMapping
-	public List<Lancamento> pesquisar(LancamentoFilter lancamentoFilter){ // listar todos os lançamentos
-		return lancamentoRepository.filtrar(lancamentoFilter);
+	public  Page<Lancamento> pesquisar(LancamentoFilter lancamentoFilter, Pageable pageable){ // listar todos os lançamentos
+		return lancamentoRepository.filtrar(lancamentoFilter, pageable);
 	}
 	
 	@GetMapping("/{codigo}")
@@ -82,7 +84,7 @@ public class LancamentoResource {
 	
 	@DeleteMapping("/{codigo}") // mapeamento do deletar lancamento
 	@ResponseStatus(HttpStatus.NO_CONTENT) // retorna o codigo 204, excluiu com sucesso mais não retorna nada.
-	public void remover(Long codigo) {
+	public void remover(@PathVariable Long codigo) {
 		lancamentoRepository.deleteById(codigo);
 	}
 	

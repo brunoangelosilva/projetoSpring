@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,37 +40,39 @@ public class PessoaResource {
 	private ApplicationEventPublisher publisher; // publicador de applicationEvent
 	
 	@GetMapping  //mapeamento do get para essa Pessoa
-	public List<Pessoa> listar(){
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and #oauth2.hasScope('read')")
+	public List<Pessoa> listar() {
 		return pessoaRepository.findAll();	
 	}
 	
 	@PostMapping
-	public ResponseEntity<Pessoa> criar(@Valid @RequestBody Pessoa pessoa , HttpServletResponse response){
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and #oauth2.hasScope('write')")
+	public ResponseEntity<Pessoa> criar(@Valid @RequestBody Pessoa pessoa , HttpServletResponse response) {
 		
 		Pessoa pessoaSalva  = pessoaRepository.save(pessoa);
 		
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, pessoaSalva.getCodigo()));
-		return ResponseEntity.status(HttpStatus.CREATED).body(pessoaSalva);
-		
+		return ResponseEntity.status(HttpStatus.CREATED).body(pessoaSalva);	
 	}
 	
 	@GetMapping("/{codigo}")
-	public ResponseEntity<Pessoa> buscarPorId(@PathVariable Long codigo){		
-		Pessoa pessoa = pessoaRepository.findById(codigo).orElse(null);		
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and #oauth2.hasScope('read')")
+	public ResponseEntity<Pessoa> buscarPorId(@PathVariable Long codigo) {		
+		Pessoa pessoa = pessoaRepository.findOne(codigo);		
 		return pessoa!=null ? ResponseEntity.ok(pessoa):ResponseEntity.notFound().build();		
 	}
 
-	@DeleteMapping("{codigo}") // mapeamento do delete 
+	@DeleteMapping("{codigo}") // mapeamento do delete  
+	@PreAuthorize("hasAuthority('ROLE_REMOVER_PESSOA') and #oauth2.hasScope('delete')")
 	@ResponseStatus(HttpStatus.NO_CONTENT)// retorna 204, foi executado com sucesso mais não tem nada pra retornar
 	public void remover(@PathVariable Long codigo) {
-		pessoaRepository.deleteById(codigo);
+		pessoaRepository.delete(codigo);
 	}
 	
 	@PutMapping("/{codigo}")
-	public ResponseEntity<Pessoa> atualizar(@PathVariable Long codigo, @Valid @RequestBody Pessoa pessoa){		
+	public ResponseEntity<Pessoa> atualizar(@PathVariable Long codigo, @Valid @RequestBody Pessoa pessoa) {		
 		Pessoa pessoaSalva = pessoaService.pessoaAtualizar(codigo, pessoa);
-		return ResponseEntity.ok(pessoaSalva);
-		
+		return ResponseEntity.ok(pessoaSalva);		
 	}
 	
 	@PutMapping("/{codigo}/ativo")

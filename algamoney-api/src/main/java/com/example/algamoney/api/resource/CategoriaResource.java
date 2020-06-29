@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,12 +39,14 @@ public class CategoriaResource {
 	private ApplicationEventPublisher publisher; // publicador de applicationEvent
 	
 	@GetMapping //mapeamento do get para essa categoria
-	public List<Categoria> listar(){
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')") // Só quem tem essa role pode acessar o metodo
+	public List<Categoria> listar(){														// o scope é para o client não para o usuario do sistema.
 		return categoriaRepository.findAll();
 	}
 	
 	@PostMapping // mapeamento do post (inserir) para categoria
-	//@ResponseStatus(HttpStatus.CREATED)
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('write')")  // Só quem tem essa role pode acessar o metodo
+	//@ResponseStatus(HttpStatus.CREATED)													// o scope é para o client não para o usuario do sistema.
 	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) { //HttpServletResponse serve 
 																											//para identificar no header 
 																											//como eu posso consultar o recurso criado
@@ -52,20 +55,21 @@ public class CategoriaResource {
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSalva.getCodigo())); // this = quem gerou o evento ; response e código
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(categoriaSalva); // retornando no body do response a categoria criada 
-																			   // e substitui a anotação @ResponseStatus do método criar 																														 		
-																		
+																			   // e substitui a anotação @ResponseStatus do método criar 																														 																				
 	}
 	
 	@GetMapping("/{codigo}")
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')")  // Só quem tem essa role pode acessar o metodo
+																							// o scope é para o client não para o usuario do sistema.
 	public ResponseEntity <Categoria> buscarPorId(@PathVariable Long codigo) { //consultar uma categoria pelo código
-		Categoria categoria =  categoriaRepository.findById(codigo).orElse(null);
+		Categoria categoria =  categoriaRepository.findOne(codigo);
 		return categoria!=null ? ResponseEntity.ok(categoria) : ResponseEntity.notFound().build();
 	}
 	
-	@DeleteMapping("/{codigo}")// mapeamento do delete 
+	@DeleteMapping("/{codigo}")// mapeamento do delete 	
 	@ResponseStatus(HttpStatus.NO_CONTENT)// retorna 204, foi executado com sucesso mais não tem nada pra retornar
 	public void remover(@PathVariable Long codigo) {
-		categoriaRepository.deleteById(codigo);
+		categoriaRepository.delete(codigo);
 	}
 	
 	@PutMapping("/{codigo}")

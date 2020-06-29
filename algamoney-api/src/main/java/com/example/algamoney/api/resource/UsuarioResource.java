@@ -55,14 +55,14 @@ public class UsuarioResource {
 	
 	@GetMapping("/{codigo}")
 	public ResponseEntity<Usuario> buscarPorId(@PathVariable Long codigo){		
-		Usuario usuario = usuarioRepository.findById(codigo).orElse(null);
+		Usuario usuario = usuarioRepository.findOne(codigo);
 		return usuario!=null ? ResponseEntity.ok(usuario):ResponseEntity.notFound().build();		
 	}
 	
 	@DeleteMapping("{codigo}") // mapeamento do delete 
 	@ResponseStatus(HttpStatus.NO_CONTENT)// retorna 204, foi executado com sucesso mais não tem nada pra retornar
 	public void remover(@PathVariable Long codigo) {
-		usuarioRepository.deleteById(codigo);
+		usuarioRepository.delete(codigo);
 	}
 	
 	@PutMapping("/{codigo}")

@@ -24,7 +24,7 @@ public class LancamentoService {
 
 	public Lancamento AtualizarLancamento(Long codigo, Lancamento lancamento) {
 
-		Lancamento lancamentoSalvo = lancamentoRepository.findById(codigo).orElse(null);
+		Lancamento lancamentoSalvo = lancamentoRepository.findOne(codigo);
 		if (lancamentoSalvo == null) {
 			throw new EmptyResultDataAccessException(1); // levanta excessão de resultado vazio experava pelo menos 1 resultado.
 		}
@@ -35,7 +35,7 @@ public class LancamentoService {
 
 	public Lancamento buscarPorId(Long codigo) {
 
-		Lancamento lancamentoSalvo = lancamentoRepository.findById(codigo).orElse(null);
+		Lancamento lancamentoSalvo = lancamentoRepository.findOne(codigo);
 		if (lancamentoSalvo == null) {
 			throw new EmptyResultDataAccessException(1);
 		}
@@ -44,7 +44,7 @@ public class LancamentoService {
 	}
 
 	public Lancamento salvar(@Valid Lancamento lancamento) {
-		Pessoa pessoa = pessoaRepository.findById(lancamento.getPessoa().getCodigo()).orElse(null);
+		Pessoa pessoa = pessoaRepository.findOne(lancamento.getPessoa().getCodigo());
 		if(pessoa==null || pessoa.isInativo() ) {  // se a pessoa não existir ou não estiver ativa levanta excessão
 			throw new PessoaInexistenteOuInativoException();
 		}

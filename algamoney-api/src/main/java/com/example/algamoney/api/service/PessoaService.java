@@ -33,7 +33,7 @@ public class PessoaService {  // classe para regra de negócio (insert, update, 
 	}
 	
 	private Pessoa buscarPessoaPorId(Long codigo) {
-		Pessoa pessoaSalva = pessoaRepository.findById(codigo).orElse(null);
+		Pessoa pessoaSalva = pessoaRepository.findOne(codigo);
 		if(pessoaSalva==null) {
 			throw new  EmptyResultDataAccessException(1); // levanta excessao 
 		 }

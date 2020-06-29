@@ -15,7 +15,7 @@ public class UsuarioService {
 	private UsuarioRepository usuarioRepository; 
 	
 	public Usuario atualizarUsuario(Long codigo, Usuario usuario) {
-		Usuario usuarioSalvo = usuarioRepository.findById(codigo).orElse(null);
+		Usuario usuarioSalvo = usuarioRepository.findOne(codigo);
 		if(usuarioSalvo==null) {
 			throw new EmptyResultDataAccessException(1);
 		}
@@ -29,7 +29,7 @@ public class UsuarioService {
 	
 	public Usuario buscarPorId(Long codigo) {
 		
-		Usuario usuarioSalvo = usuarioRepository.findById(codigo).orElse(null);
+		Usuario usuarioSalvo = usuarioRepository.findOne(codigo);
 		if(usuarioSalvo == null) {
 			throw new EmptyResultDataAccessException(1);
 		}

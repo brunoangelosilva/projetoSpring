@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ import com.example.algamoney.api.exceptionhandler.AlgamoneyExceptionHandler.Erro
 import com.example.algamoney.api.model.Lancamento;
 import com.example.algamoney.api.repository.LancamentoRepository;
 import com.example.algamoney.api.repository.filter.LancamentoFilter;
+import com.example.algamoney.api.repository.projection.ResumoLancamento;
 import com.example.algamoney.api.service.LancamentoService;
 import com.example.algamoney.api.service.exception.PessoaInexistenteOuInativoException;
 
@@ -49,19 +51,27 @@ public class LancamentoResource {
 	@Autowired
 	private ApplicationEventPublisher publisher; // publicador de AplicationEvent
 	
-	@GetMapping
+	@GetMapping 
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')")
 	public  Page<Lancamento> pesquisar(LancamentoFilter lancamentoFilter, Pageable pageable){ // listar todos os lançamentos
 		return lancamentoRepository.filtrar(lancamentoFilter, pageable);
 	}
 	
+	@GetMapping(params = "resumo") //projeção, toda vez que tiver resumo vem pra esse mapeamento se não vai para o de cima 
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')")
+	public  Page<ResumoLancamento> resumir(LancamentoFilter lancamentoFilter, Pageable pageable){ // listar todos os lançamentos
+		return lancamentoRepository.resumir(lancamentoFilter, pageable);
+	}	
+	
 	@GetMapping("/{codigo}")
 	public ResponseEntity<Lancamento> buscarPorId(@PathVariable Long codigo){
-		Lancamento lancamento = lancamentoRepository.findById(codigo).orElse(null);
+		Lancamento lancamento = lancamentoRepository.findOne(codigo);
 		return lancamento!=null? ResponseEntity.ok(lancamento): ResponseEntity.notFound().build();
 	}
 	
 	@PostMapping //mapeamento para inserir lancamento
 	//@ResponseStatus(HttpStatus.CREATED)
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('write')")
 	public ResponseEntity<Lancamento> criar(@Valid @RequestBody Lancamento lancamento , HttpServletResponse response){
 		Lancamento lancamentoSalvo = lancamentoService.salvar(lancamento);
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, lancamentoSalvo.getCodigo()));
@@ -83,9 +93,10 @@ public class LancamentoResource {
 	}
 	
 	@DeleteMapping("/{codigo}") // mapeamento do deletar lancamento
+	@PreAuthorize("hasAuthority('ROLE_REMOVER_LANCAMENTO') and #oauth2.hasScope('delete')")
 	@ResponseStatus(HttpStatus.NO_CONTENT) // retorna o codigo 204, excluiu com sucesso mais não retorna nada.
 	public void remover(@PathVariable Long codigo) {
-		lancamentoRepository.deleteById(codigo);
+		lancamentoRepository.delete(codigo);
 	}
 	
 }

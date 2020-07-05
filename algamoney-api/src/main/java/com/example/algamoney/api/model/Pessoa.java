@@ -60,8 +60,8 @@ public class Pessoa {
 		this.ativo = ativo;
 	}
 
-	@JsonIgnore
-	@Transient
+	@JsonIgnore // marcar esta variavel para ignorar na serialização ou deserialização 
+	@Transient // especifica esta propriedade para não persistir no banco
 	public boolean isInativo() {
 		return !this.ativo;
 	}

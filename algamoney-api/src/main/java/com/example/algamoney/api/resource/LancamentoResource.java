@@ -86,10 +86,15 @@ public class LancamentoResource {
 		return ResponseEntity.badRequest().body(erros);
 	}
 	
-	@PutMapping
+	@PutMapping("/{codigo}")
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('write')")
 	public ResponseEntity<Lancamento> atualizarLancamento(@PathVariable Long codigo, @Valid @RequestBody Lancamento lancamento){
-		Lancamento lancamentoAtualizado = lancamentoService.AtualizarLancamento(codigo, lancamento);
-		return ResponseEntity.ok(lancamentoAtualizado);
+		try {
+			Lancamento lancamentoAtualizado = lancamentoService.AtualizarLancamento(codigo, lancamento);
+			return ResponseEntity.ok(lancamentoAtualizado);			
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.notFound().build();
+		}
 	}
 	
 	@DeleteMapping("/{codigo}") // mapeamento do deletar lancamento
